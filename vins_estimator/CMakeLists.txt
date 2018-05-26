@@ -15,13 +15,17 @@ find_package(catkin REQUIRED COMPONENTS
     cv_bridge
     )
 
-find_package(OpenCV REQUIRED)
+find_package(OpenCV 3 REQUIRED
+        PATHS /usr/local/opencv_3.3.0
+        NO_DEFAULT_PATH
+	CONFIG
+)
 
 message(WARNING "OpenCV_VERSION: ${OpenCV_VERSION}")
 
 find_package(Ceres REQUIRED)
 
-include_directories(${catkin_INCLUDE_DIRS} ${CERES_INCLUDE_DIRS})
+include_directories(${catkin_INCLUDE_DIRS} ${CERES_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS})
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 find_package(Eigen3)
@@ -30,7 +34,10 @@ include_directories(
   ${EIGEN3_INCLUDE_DIR}
 )
 
-catkin_package()
+catkin_package(
+	DEPENDS OpenCV
+        LIBRARIES ${PROJECT_NAME}
+	)
 
 add_executable(vins_estimator
     src/estimator_node.cpp

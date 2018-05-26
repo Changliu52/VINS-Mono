@@ -16,10 +16,16 @@ find_package(catkin REQUIRED COMPONENTS
   message_filters
   camera_model
 )
-find_package(OpenCV REQUIRED)
+
+find_package(OpenCV 3 REQUIRED
+        PATHS /usr/local/opencv_3.3.0
+        NO_DEFAULT_PATH
+	CONFIG
+)
 
 catkin_package(
-
+	DEPENDS OpenCV
+        LIBRARIES ${PROJECT_NAME}
 )
 
 

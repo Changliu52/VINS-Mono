@@ -1,4 +1,4 @@
-#include "feature_tracker.h"
+#include "feature_tracker/feature_tracker.h"
 
 int FeatureTracker::n_id = 0;
 
@@ -80,20 +80,23 @@ void FeatureTracker::addPoints()
 
 void FeatureTracker::readImage(const cv::Mat &_img, double _cur_time)
 {
-    cv::Mat img;
+    cv::cuda::GpuMat img_d;
+    cv::cuda::GpuMat _img_d(_img);
     TicToc t_r;
     cur_time = _cur_time;
 
     if (EQUALIZE)
     {
-        cv::Ptr<cv::CLAHE> clahe = cv::createCLAHE(3.0, cv::Size(8, 8));
+        cv::Ptr<cv::cuda::CLAHE> clahe = cv::cuda::createCLAHE(3.0, cv::Size(8, 8));
         TicToc t_c;
-        clahe->apply(_img, img);
+        clahe->apply(_img_d, img_d);
         ROS_DEBUG("CLAHE costs: %fms", t_c.toc());
     }
     else
-        img = _img;
+        img_d = _img_d;
 
+    cv::Mat img;
+    img_d.download(img);
     if (forw_img.empty())
     {
         prev_img = cur_img = forw_img = img;
@@ -110,7 +113,17 @@ void FeatureTracker::readImage(const cv::Mat &_img, double _cur_time)
         TicToc t_o;
         vector<uchar> status;
         vector<float> err;
-        cv::calcOpticalFlowPyrLK(cur_img, forw_img, cur_pts, forw_pts, status, err, cv::Size(21, 21), 3);
+	cv::Ptr<cv::cuda::SparsePyrLKOpticalFlow> klt_gpu = cv::cuda::SparsePyrLKOpticalFlow::create(cv::Size(21, 21), 3);
+	cv::cuda::GpuMat cur_img_d(cur_img);
+	cv::cuda::GpuMat forw_img_d(forw_img);
+	cv::cuda::GpuMat cur_pts_d(cur_pts);
+	cv::cuda::GpuMat forw_pts_d(forw_pts);
+	cv::cuda::GpuMat status_d(status);
+	klt_gpu->calc(cur_img_d, forw_img_d, cur_pts_d, forw_pts_d, status_d);
+        //cv::calcOpticalFlowPyrLK(cur_img, forw_img, cur_pts, forw_pts, status, err, cv::Size(21, 21), 3);
+	cur_pts_d.download(cur_pts);
+	forw_pts_d.download(forw_pts);
+	status_d.download(status);
 
         for (int i = 0; i < int(forw_pts.size()); i++)
             if (status[i] && !inBorder(forw_pts[i]))
@@ -146,7 +159,12 @@ void FeatureTracker::readImage(const cv::Mat &_img, double _cur_time)
                 cout << "mask type wrong " << endl;
             if (mask.size() != forw_img.size())
                 cout << "wrong size " << endl;
-            cv::goodFeaturesToTrack(forw_img, n_pts, MAX_CNT - forw_pts.size(), 0.01, MIN_DIST, mask);
+	    cv::cuda::GpuMat forw_img_d(forw_img);
+	    cv::Ptr<cv::cuda::CornersDetector> detector = cv::cuda::createGoodFeaturesToTrackDetector(forw_img_d.type(), MAX_CNT, 0.01, MIN_DIST);
+ 	    cv::cuda::GpuMat n_pts_d;
+    	    detector->detect(forw_img_d, n_pts_d);
+	    n_pts_d.download(n_pts);
+            //cv::goodFeaturesToTrack(forw_img, n_pts, MAX_CNT - forw_pts.size(), 0.01, MIN_DIST, mask);
         }
         else
             n_pts.clear();

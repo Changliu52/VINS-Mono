@@ -1,4 +1,4 @@
-#include "parameters.h"
+#include "feature_tracker/parameters.h"
 
 std::string IMAGE_TOPIC;
 std::string IMU_TOPIC;

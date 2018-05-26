@@ -3,7 +3,10 @@
 
 #include <boost/shared_ptr.hpp>
 #include <eigen3/Eigen/Dense>
+#include <opencv2/opencv.hpp>
 #include <opencv2/core/core.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
+#include <opencv2/calib3d/calib3d.hpp>
 #include <vector>
 
 namespace camodocal

@@ -9,30 +9,36 @@ find_package(catkin REQUIRED COMPONENTS
     roscpp
     std_msgs
     )
+include_directories(
+	include
+	${catkin_INCLUDE_DIRS}
+)
 
 find_package(Boost REQUIRED COMPONENTS filesystem program_options system)
 include_directories(${Boost_INCLUDE_DIRS})
 
-find_package(OpenCV REQUIRED)
-
-# set(EIGEN_INCLUDE_DIR "/usr/local/include/eigen3")
 find_package(Ceres REQUIRED)
 include_directories(${CERES_INCLUDE_DIRS})
 
+find_package(OpenCV 3 REQUIRED
+        PATHS /usr/local/opencv_3.3.0
+        NO_DEFAULT_PATH
+	NO_MODULE
+	CONFIG)
+include_directories(${OpenCV_INCLUDE_DIRS})
 
 catkin_package(
-    INCLUDE_DIRS include
-    LIBRARIES camera_model
-    CATKIN_DEPENDS roscpp std_msgs
-#    DEPENDS system_lib
-    )
+	CATKIN_DEPENDS roscpp std_msgs
+	LIBRARIES camera_model
+	DEPENDS OpenCV
+	INCLUDE_DIRS include
+)
 
-include_directories(
-    ${catkin_INCLUDE_DIRS}
-    )
-
-include_directories("include")
-
+message(WARNING "OpenCV_VERSION: ${OpenCV_VERSION}")
+message(WARNING "OpenCV_INCLUDE_DIRS: ${OpenCV_INCLUDE_DIRS}")
+message(WARNING "OpenCV_LIBRARIES: ${OpenCV_LIBRARIES}")
+message(WARNING "CMAKE_PREFIX_PATH: ${CMAKE_PREFIX_PATH}")
+message(WARNING "LD_LIBRARY_PATH: ${LD_LIBRARY_PATH}")
 
 add_executable(Calibration 
     src/intrinsic_calib.cc
@@ -63,5 +69,5 @@ add_library(camera_model
     src/gpl/gpl.cc
     src/gpl/EigenQuaternionParameterization.cc)
 
-target_link_libraries(Calibration ${Boost_LIBRARIES} ${OpenCV_LIBS} ${CERES_LIBRARIES})
-target_link_libraries(camera_model ${Boost_LIBRARIES} ${OpenCV_LIBS} ${CERES_LIBRARIES})
+target_link_libraries(Calibration ${Boost_LIBRARIES} ${OpenCV_LIBRARIES} ${CERES_LIBRARIES})
+target_link_libraries(camera_model ${Boost_LIBRARIES} ${OpenCV_LIBRARIES} ${CERES_LIBRARIES})
