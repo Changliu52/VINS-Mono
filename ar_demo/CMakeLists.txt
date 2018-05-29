@@ -12,38 +12,35 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   image_transport
   sensor_msgs
-  cv_bridge
   message_filters
   camera_model
 )
 
-find_package(OpenCV 3 REQUIRED
-        PATHS /usr/local/opencv_3.3.0
-        NO_DEFAULT_PATH
-	CONFIG
-)
+set(cv_bridge_DIR "/home/nvidia/ws_opencv/deve/share/cv_bridge/cmake")
+find_package(cv_bridge REQUIRED NO_CMAKE_PATH)
+
+set(OpenCV_DIR "/home/nvidia/opencv/build")
+find_package(OpenCV 3 REQUIRED NO_CMAKE_PATH)
 
 catkin_package(
-	DEPENDS OpenCV
         LIBRARIES ${PROJECT_NAME}
 )
 
-
-include_directories(
-  ${catkin_INCLUDE_DIRS}
-)
-
-set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 find_package(Eigen3)
+
 include_directories(
-  ${catkin_INCLUDE_DIRS}
-  ${EIGEN3_INCLUDE_DIR}
+	${OpenCV_INCLUDE_DIRS}
+	${cv_bridge_INCLUDE_DIRS}
+	${EIGEN3_INCLUDE_DIR}
+	${catkin_INCLUDE_DIRS}
 )
 
 add_executable(ar_demo_node src/ar_demo_node.cpp)
 
  target_link_libraries(ar_demo_node
-   ${catkin_LIBRARIES} ${OpenCV_LIBS}
+	${OpenCV_LIBS}
+	${cv_bridge_LIBRARIES}
+	${catkin_LIBRARIES}
  )
 
 

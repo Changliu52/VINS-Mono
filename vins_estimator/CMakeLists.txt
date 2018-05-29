@@ -12,14 +12,15 @@ find_package(catkin REQUIRED COMPONENTS
     geometry_msgs
     nav_msgs
     tf
-    cv_bridge
     )
 
-find_package(OpenCV 3 REQUIRED
-        PATHS /usr/local/opencv_3.3.0
-        NO_DEFAULT_PATH
-	CONFIG
-)
+set(cv_bridge_DIR "/home/nvidia/ws_opencv/deve/share/cv_bridge/cmake")
+find_package(cv_bridge REQUIRED NO_CMAKE_PATH)
+include_directories(${cv_bridge_INCLUDE_DIRS})
+
+set(OpenCV_DIR "/home/nvidia/opencv/build")
+find_package(OpenCV 3 REQUIRED NO_CMAKE_PATH)
+include_directories(${OpenCV_INCLUDE_DIRS})
 
 message(WARNING "OpenCV_VERSION: ${OpenCV_VERSION}")
 

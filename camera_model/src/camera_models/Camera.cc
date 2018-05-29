@@ -137,15 +137,7 @@ Camera::estimateExtrinsics(const std::vector<cv::Point3f>& objectPoints,
     }
 
     // assume unit focal length, zero principal point, and zero distortion
-    cv::cuda::GpuMat objectPoints_d(objectPoints);
-    cv::cuda::GpuMat Ms_d(Ms);
-    cv::cuda::GpuMat eye_d(cv::Mat::eye(3, 3, CV_64F));
-    cv::cuda::GpuMat na_d(cv::noArray());
-    cv::cuda::GpuMat rvec_d, tvec_d;
-    cv::cuda::solvePnPRansac(objectPoints_d, Ms_d, eye_d, na_d, rvec_d, tvec_d);
-    rvec_d.download(rvec);
-    tvec_d.download(tvec);
-	//cv::solvePnP(objectPoints, Ms, cv::Mat::eye(3, 3, CV_64F), cv::noArray(), rvec, tvec);
+    cv::solvePnP(objectPoints, Ms, cv::Mat::eye(3, 3, CV_64F), cv::noArray(), rvec, tvec);
 }
 
 double

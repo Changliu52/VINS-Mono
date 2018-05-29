@@ -8,34 +8,49 @@ set(CMAKE_CXX_FLAGS_RELEASE "-O3 -Wall -g")
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
 # Dependencies
-include_directories(include)
-
-find_package(OpenCV 3 REQUIRED
-        PATHS /usr/local/opencv_3.3.0
-        NO_DEFAULT_PATH
-	CONFIG)
-include_directories(${OpenCV_INCLUDE_DIRS})
 
 find_package(Eigen3)
-include_directories(${EIGEN3_INCLUDE_DIR})
 
-set(cv_bridge_DIR /usr/local/share/cv_bridge/cmake)
 find_package(catkin REQUIRED COMPONENTS
-    roscpp std_msgs sensor_msgs cv_bridge camera_model)
-include_directories(${catkin_INCLUDE_DIRS})
+    roscpp std_msgs sensor_msgs camera_model)
+
+set(cv_bridge_DIR "/home/nvidia/ws_opencv/deve/share/cv_bridge/cmake")
+find_package(cv_bridge REQUIRED NO_CMAKE_PATH)
+
+set(OpenCV_DIR "/home/nvidia/opencv/build")
+#set(_include_dirs "include;/home/nvidia/opencv")
+find_package(OpenCV 3 REQUIRED NO_CMAKE_PATH)
 
 
+catkin_package()
+
+
+include_directories(include ${OpenCV_INCLUDE_DIRS} ${cv_bridge_INCLUDE_DIRS} ${EIGEN3_INCLUDE_DIR}
+${catkin_INCLUDE_DIRS})
+
+#set(CMAKE_PREFIX_PATH /home/nvidia/opencv;${CMAKE_PREFIX_PATH})
+#set(_include_dirs "include;/home/nvidia/opencv")
+
+#########
 # Build
-catkin_package(INCLUDE_DIRS include
-		CATKIN_DEPENDS std_msgs sensor_msgs camera_model cv_bridge
-		DEPENDS OpenCV
-		#LIBRARIES ${PROJECT_NAME}
+#########
+message(WARNING "OpenCV_VERSION: ${OpenCV_VERSION}")
+message(WARNING "OpenCV_INCLUDE_DIRS: ${OpenCV_INCLUDE_DIRS}")
+message(WARNING "OpenCV_LIBRARIES: ${OpenCV_LIBRARIES}")
+message(WARNING "OpenCV_LIBS: ${OpenCV_LIBS}")
+message(WARNING "CMAKE_PREFIX_PATH: ${CMAKE_PREFIX_PATH}")
+message(WARNING "LD_LIBRARY_PATH: ${LD_LIBRARY_PATH}")
+message(WARNING "_include_dirs: ${_include_dirs}")
+
+add_library(feature_tracker_lib
+	src/parameters.cpp
+	src/feature_tracker.cpp
 )
+target_link_libraries(feature_tracker_lib 
+	${OpenCV_LIBS} ${cv_bridge_LIBRARIES} ${catkin_LIBRARIES})
 
 add_executable(feature_tracker
-    src/feature_tracker_node.cpp
-    src/parameters.cpp
-    src/feature_tracker.cpp
+	src/feature_tracker_node.cpp
 )
-
-target_link_libraries(feature_tracker ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
+target_link_libraries(feature_tracker 
+	feature_tracker_lib ${catkin_LIBRARIES}) #Note OpenCV_LIBS needs to be before cakin_libs
