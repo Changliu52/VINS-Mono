@@ -17,9 +17,8 @@ find_package(catkin REQUIRED COMPONENTS
 set(cv_bridge_DIR "/home/nvidia/ws_opencv/deve/share/cv_bridge/cmake")
 find_package(cv_bridge REQUIRED NO_CMAKE_PATH)
 
-set(OpenCV_DIR "/home/nvidia/opencv/build")
-#set(_include_dirs "include;/home/nvidia/opencv")
-find_package(OpenCV 3 REQUIRED NO_CMAKE_PATH)
+set(OpenCV_DIR "/usr/local")
+find_package(OpenCV 3.4.1 REQUIRED NO_CMAKE_PATH)
 
 
 catkin_package()

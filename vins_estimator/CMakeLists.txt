@@ -18,8 +18,8 @@ set(cv_bridge_DIR "/home/nvidia/ws_opencv/deve/share/cv_bridge/cmake")
 find_package(cv_bridge REQUIRED NO_CMAKE_PATH)
 include_directories(${cv_bridge_INCLUDE_DIRS})
 
-set(OpenCV_DIR "/home/nvidia/opencv/build")
-find_package(OpenCV 3 REQUIRED NO_CMAKE_PATH)
+set(OpenCV_DIR "/usr/local")
+find_package(OpenCV 3.4.1 REQUIRED NO_CMAKE_PATH)
 include_directories(${OpenCV_INCLUDE_DIRS})
 
 message(WARNING "OpenCV_VERSION: ${OpenCV_VERSION}")

@@ -15,8 +15,8 @@ find_package(catkin REQUIRED COMPONENTS
     roslib
     )
 
-set(OpenCV_DIR "/home/nvidia/opencv/build")
-find_package(OpenCV 3 REQUIRED NO_CMAKE_PATH)
+set(OpenCV_DIR "/usr/local")
+find_package(OpenCV 3.4.1 REQUIRED NO_CMAKE_PATH)
 include_directories(${OpenCV_INCLUDE_DIRS})
 
 

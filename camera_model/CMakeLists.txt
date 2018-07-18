@@ -14,8 +14,8 @@ find_package(catkin REQUIRED COMPONENTS
 find_package(Boost REQUIRED COMPONENTS filesystem program_options system)
 find_package(Ceres REQUIRED)
 
-set(OpenCV_DIR "/home/nvidia/opencv/build")
-find_package(OpenCV 3 REQUIRED NO_CMAKE_PATH)
+set(OpenCV_DIR "/usr/local")
+find_package(OpenCV 3.4.1 REQUIRED NO_CMAKE_PATH)
 
 
 catkin_package(
@@ -45,7 +45,7 @@ message(WARNING "CMAKE_PREFIX_PATH: ${CMAKE_PREFIX_PATH}")
 message(WARNING "LD_LIBRARY_PATH: ${LD_LIBRARY_PATH}")
 message(WARNING "_include_dirs: ${_include_dirs}")
 
-cuda_add_library(camera_model
+add_library(camera_model
     src/chessboard/Chessboard.cc
     src/calib/CameraCalibration.cc
     src/camera_models/Camera.cc
@@ -60,7 +60,7 @@ cuda_add_library(camera_model
     src/gpl/EigenQuaternionParameterization.cc
 )
 
-cuda_add_executable(Calibration 
+add_executable(Calibration 
     src/intrinsic_calib.cc
     src/chessboard/Chessboard.cc
     src/calib/CameraCalibration.cc
