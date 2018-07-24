@@ -29,7 +29,7 @@ void registerPub(ros::NodeHandle &n)
     pub_point_cloud = n.advertise<sensor_msgs::PointCloud>("point_cloud", 1000);
     pub_margin_cloud = n.advertise<sensor_msgs::PointCloud>("history_cloud", 1000);
     pub_key_poses = n.advertise<visualization_msgs::Marker>("key_poses", 1000);
-    pub_camera_pose = n.advertise<nav_msgs::Odometry>("camera_pose", 1000);
+    pub_camera_pose = n.advertise<geometry_msgs::PoseStamped>("camera_pose", 1000);
     pub_camera_pose_visual = n.advertise<visualization_msgs::MarkerArray>("camera_pose_visual", 1000);
     pub_keyframe_pose = n.advertise<nav_msgs::Odometry>("keyframe_pose", 1000);
     pub_keyframe_point = n.advertise<sensor_msgs::PointCloud>("keyframe_point", 1000);
@@ -217,22 +217,22 @@ void pubCameraPose(const Estimator &estimator, const std_msgs::Header &header)
         Vector3d P = estimator.Ps[i] + estimator.Rs[i] * estimator.tic[0];
         Quaterniond R = Quaterniond(estimator.Rs[i] * estimator.ric[0]);
 
-        nav_msgs::Odometry odometry;
-        odometry.header = header;
-        odometry.header.frame_id = "world";
-        odometry.pose.pose.position.x = P.x();
-        odometry.pose.pose.position.y = P.y();
-        odometry.pose.pose.position.z = P.z();
-        odometry.pose.pose.orientation.x = R.x();
-        odometry.pose.pose.orientation.y = R.y();
-        odometry.pose.pose.orientation.z = R.z();
-        odometry.pose.pose.orientation.w = R.w();
+        geometry_msgs::PoseStamped pose;
+        pose.header = header;
+        pose.header.frame_id = "world";
+        pose.pose.position.x = P.x();
+        pose.pose.position.y = P.y();
+        pose.pose.position.z = P.z();
+        pose.pose.orientation.x = R.x();
+        pose.pose.orientation.y = R.y();
+        pose.pose.orientation.z = R.z();
+        pose.pose.orientation.w = R.w();
 
-        pub_camera_pose.publish(odometry);
+        pub_camera_pose.publish(pose);
 
         cameraposevisual.reset();
         cameraposevisual.add_pose(P, R);
-        cameraposevisual.publish_by(pub_camera_pose_visual, odometry.header);
+        cameraposevisual.publish_by(pub_camera_pose_visual, pose.header);
     }
 }
 
